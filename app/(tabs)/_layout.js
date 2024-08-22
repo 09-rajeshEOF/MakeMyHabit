@@ -28,7 +28,7 @@ const layout = () => {
                         focused ? (<FontAwesome5 name="calendar" size={24} color="#7CB9E8" />) : (<FontAwesome5 name="calendar" size={24} color="black" />)
                 }
             } />
-            
+
             <Tabs.Screen name="profile" options={
                 {
                     tabBarLabel: "profile",
@@ -45,3 +45,9 @@ const layout = () => {
 }
 
 export default layout;
+
+const styles = StyleSheet.create(
+    {
+        
+    }
+)
