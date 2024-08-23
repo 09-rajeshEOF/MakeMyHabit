@@ -4,10 +4,7 @@ import { DateTimePickerAndroid } from '@react-native-community/datetimepicker';
 import Button from './../(components)/Button';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { router } from 'expo-router';
-
-
-
-
+import { getAuth,createUserWithEmailAndPassword } from 'firebase/auth';
 
 const register = () => {
   const [name, setName] = useState('');
@@ -83,6 +80,17 @@ const register = () => {
       }
     }
   };
+
+  const auth = getAuth();
+  createUserWithEmailAndPassword(auth, email, password)
+    .then((userCredential) => {
+      // Signed up 
+      const user = userCredential.user;
+      // ...
+    })
+    .catch((error) => {
+      console.log(error.code, "----->" ,error.message);
+    });
 
   return (
     <SafeAreaView style={styles.container}>

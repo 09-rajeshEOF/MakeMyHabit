@@ -3,50 +3,44 @@ import React, { useEffect, useState } from 'react';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Button from '../(components)/Button';
 import { router } from 'expo-router';
-
-
+import app from './../../firebaseConfig';
+import { getAuth,signInWithEmailAndPassword,GoogleAuthProvider,signInWithPopup} from 'firebase/auth';
 
 const Login = ({ name }) => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [passwordVisible, setPasswordVisible] = useState(false);
-    const handleLogin = async () => {
+
+    const auth = getAuth(app);
+
+     const handleLogin = async () => {
         try {
-          await auth.signInWithEmailAndPassword(email, password);
+          await signInWithEmailAndPassword(auth, email, password);
           console.log('Login successful');
         } catch (error) {
           console.error('Login failed', error);
         }
       };
-
-    //   useEffect(() => {
-    //     GoogleSignin.configure({
-    //     webClientId : "942974350139-3mlgmcle9luh9080g3kbrugdqd5cho1j.apps.googleusercontent.com" })
-    //   },[]);
-
-    //   async function onGoogleButtonPress() {
-    //     // Check if your device supports Google Play
-    //     await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
-    //     // Get the users ID token
-    //     const { idToken } = await GoogleSignin.signIn();
+      const handleGoogleSignIn = async () => {
+        const provider = new GoogleAuthProvider();
+        try {
+          const result = await signInWithPopup(getAuth(app), provider);
+          const credential = GoogleAuthProvider.credentialFromResult(result);
+          const token = credential.accessToken;
+          const user = result.user;
+          console.log('Google sign-in successful');
+        } catch (error) {
+          console.error('Google sign-in failed', error);
+        }
+      };
       
-    //     // Create a Google credential with the token
-    //     const googleCredential = auth.GoogleAuthProvider.credential(idToken);
-      
-    //     // Sign-in the user with the credential
-    //     return auth().signInWithCredential(googleCredential);
-    //   }
-
-    return (
-      
-        
+    return (  
         <SafeAreaView style={styles.container}>
             <View style={styles.helloMessageContainer}>
                 <Text style={styles.helloMessage}>Hey {name}!</Text>
                 <Text style={styles.helloMessage}>Welcome Back</Text>
             </View>
             <View style={styles.rowCenter}>
-
                 <Image
                     style={styles.girl_login}
                     source={require('./../../assets/girl_login.png')} />
@@ -98,7 +92,7 @@ const Login = ({ name }) => {
                             borderRadius={10}
                             backgroundColor="white"
                             value="Sign in with Google"
-                            onPress={() =>console.log('sign in with google')}
+                            onPress={handleGoogleSignIn}
                             icon="google"
                             buttonTextHeight={16}
                         />
