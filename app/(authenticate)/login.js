@@ -22,18 +22,18 @@ const Login = ({ name }) => {
         }
       };
       const handleGoogleSignIn = async () => {
-        const provider = new GoogleAuthProvider();
-        try {
-          const result = await signInWithPopup(getAuth(app), provider);
-          const credential = GoogleAuthProvider.credentialFromResult(result);
-          const token = credential.accessToken;
-          const user = result.user;
-          console.log('Google sign-in successful');
-        } catch (error) {
-          console.error('Google sign-in failed', error);
-        }
-      };
-      
+  const provider = new GoogleAuthProvider(app);
+  try {
+    const result = await signInWithPopup(auth, provider);
+    const credential = GoogleAuthProvider.credentialFromResult(result);
+    const token = credential.accessToken;
+    const user = result.user;
+    console.log('Google sign-in successful');
+  } catch (error) {
+    console.error('Google sign-in failed', error);
+  }
+};
+
     return (  
         <SafeAreaView style={styles.container}>
             <View style={styles.helloMessageContainer}>

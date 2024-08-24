@@ -3,6 +3,7 @@ import { initializeApp } from "firebase/app";
 const firebaseConfig = {
   apiKey: "AIzaSyB570bpuRxDo0lxcrmio4uf4oTz6Pn7iG4",
   authDomain: "makemyhabit-db67d.firebaseapp.com",
+  databaseURL: "https://makemyhabit-db67d-default-rtdb.asia-southeast1.firebasedatabase.app",
   projectId: "makemyhabit-db67d",
   storageBucket: "makemyhabit-db67d.appspot.com",
   messagingSenderId: "684692302574",

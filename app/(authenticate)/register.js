@@ -4,9 +4,12 @@ import { DateTimePickerAndroid } from '@react-native-community/datetimepicker';
 import Button from './../(components)/Button';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { router } from 'expo-router';
-import { getAuth,createUserWithEmailAndPassword } from 'firebase/auth';
-
+import { getFirestore ,doc,setDoc} from 'firebase/firestore';
+import { getAuth, createUserWithEmailAndPassword } from 'firebase/auth';
+import app from '../../firebaseConfig';
 const register = () => {
+const db = getFirestore(app)
+
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -15,7 +18,7 @@ const register = () => {
   const [dobString, setDobString] = useState('');
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [errors, setErrors] = useState({});
-  
+
 
   const validateEmail = (email) => {
     const regex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
@@ -53,7 +56,7 @@ const register = () => {
     }
   };
 
-  const handleRegister =  async() => {
+  const handleRegister = async () => {
     const errors = {};
     if (!name) {
       errors.name = 'Name is required';
@@ -73,25 +76,23 @@ const register = () => {
     setErrors(errors);
     if (Object.keys(errors).length === 0) {
       try {
-        console.log(user.email);
-        navigation.navigate('Login');
+        const auth = getAuth();
+        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        const userId = userCredential.user.uid;
+        const userRef = doc(db, 'users', userId);
+        await setDoc(userRef, {
+          name,
+          dob: dobString,
+          habits: {},
+        });
+        console.log('User data written to Firestore');
+        router.replace('/login');
       } catch (error) {
-        console.error('Error creating user:');
+        console.error('Error creating user:', error);
       }
     }
   };
-
-  const auth = getAuth();
-  createUserWithEmailAndPassword(auth, email, password)
-    .then((userCredential) => {
-      // Signed up 
-      const user = userCredential.user;
-      // ...
-    })
-    .catch((error) => {
-      console.log(error.code, "----->" ,error.message);
-    });
-
+    
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.helloMessageContainer}>
