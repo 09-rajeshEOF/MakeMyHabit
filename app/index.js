@@ -1,10 +1,12 @@
-import { StyleSheet, Text, View } from 'react-native'
+import { KeyboardAvoidingView, StyleSheet, Text, View } from 'react-native'
 import React from 'react'
 import { Redirect } from 'expo-router'
 
 const index = () => {
   return (
+    <KeyboardAvoidingView>
     <Redirect href="/(tabs)/home"/>
+    </KeyboardAvoidingView>
   )
 }
 

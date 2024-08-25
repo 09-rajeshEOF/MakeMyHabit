@@ -12,7 +12,7 @@ const HabitMessage = () => {
 
   return (
     <View style={styles.container}>
-      <View style={styles.greenBar} />
+      <View style={styles.bar} />
       <View style={styles.content}>
         <Text style={styles.heading}>Movie</Text>
         <Text style={styles.description}>{dummyHabit.description}</Text>
@@ -48,7 +48,7 @@ const styles = StyleSheet.create({
     shadowRadius: 5,
     elevation: 3,
   },
-  greenBar: {
+  bar: {
     width: 10,
     height: "100%",
     backgroundColor: "green",

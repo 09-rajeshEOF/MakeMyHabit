@@ -4,7 +4,10 @@ import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 
 const layout = () => {
     return (
-        <Tabs>
+        <Tabs screenOptions={{
+            tabBarHideOnKeyboard: true,
+          }}
+        >
             <Tabs.Screen name="home" options={
                 {
                     tabBarLabel: "home",
