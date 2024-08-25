@@ -1,11 +1,12 @@
 import { TextInput, Pressable, Image, ScrollView, StyleSheet, Text, View, Modal, useWindowDimensions, TouchableOpacity, KeyboardAvoidingView } from 'react-native'
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import SliderButton from '../../(components)/SliderButton';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import AntDesign from '@expo/vector-icons/AntDesign';
 
 const index = () => {
   const todo = [];
+
   const [modalVisible, setModalVisible] = useState(false);
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
@@ -15,6 +16,8 @@ const index = () => {
   const [showTimePicker, setShowTimePicker] = useState(false);
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [datePickerMode, setDatePickerMode] = useState('start');
+  const [errorMessage, setErrorMessage] = useState('');
+  const sliderRef = useRef(null);
 
   const onChangeTime = (event, selectedTime) => {
     setShowTimePicker(false);
@@ -26,11 +29,64 @@ const index = () => {
     if (selectedDate) {
       if (datePickerMode === 'start') {
         setStartDate(selectedDate);
+        // If end date is before the new start date, update it
+        if (endDate < selectedDate) {
+          setEndDate(selectedDate);
+        }
       } else {
         setEndDate(selectedDate);
       }
     }
   };
+
+  const validateForm = () => {
+    // 1. Title and description can't be empty
+    if (!title.trim() || !description.trim()) {
+      setErrorMessage('Title and description cannot be empty');
+      return false;
+    }
+
+    // 2. Title should be one word, description at least three words
+    if (title.trim().split(/\s+/).length > 1) {
+      setErrorMessage('Title should be one word only');
+      return false;
+    }
+    if (description.trim().split(/\s+/).length < 3) {
+      setErrorMessage('Description must be at least three words');
+      return false;
+    }
+
+    // 3. Start and end date must be today or later
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    if (startDate < today || endDate < today) {
+      setErrorMessage('Start and end dates must be today or later');
+      return false;
+    }
+
+    // 4. Time must be at least 5 minutes from now
+    const currentTime = new Date();
+    const selectedTime = new Date(time);
+    const fiveMinutesFromNow = new Date(currentTime.getTime() + 5 * 60000);
+    if (selectedTime < fiveMinutesFromNow) {
+      setErrorMessage('Time must be at least 5 minutes from now');
+      return false;
+    }
+
+    setErrorMessage('');
+    return true;
+  };
+
+  const handleSlideComplete = () => {
+    if (validateForm()) {
+      setModalVisible(false);
+      // Habit saving in firestore
+    } else {
+      // Reset the slider if validation fails
+      sliderRef.current?.reset();
+    }
+  };
+
 
   return (
     <KeyboardAvoidingView
@@ -82,14 +138,12 @@ const index = () => {
                 <AntDesign name="close" size={24} color="black" />
               </TouchableOpacity>
             </View>
-
             <TextInput
               style={styles.input}
               placeholder="Title"
               value={title}
               onChangeText={setTitle}
             />
-
             <TextInput
               style={styles.input}
               placeholder="Description"
@@ -97,8 +151,15 @@ const index = () => {
               onChangeText={setDescription}
               multiline
             />
-
-            <TouchableOpacity style={styles.input} onPress={() => setShowTimePicker(true)}>
+            <TouchableOpacity
+              style={styles.input}
+              onPress={() => {
+                const currentTime = new Date();
+                const fiveMinutesFromNow = new Date(currentTime.getTime() + 5 * 60000);
+                setTime(fiveMinutesFromNow);
+                setShowTimePicker(true);
+              }}
+            >
               <Text>{time.toLocaleTimeString()}</Text>
             </TouchableOpacity>
 
@@ -109,21 +170,28 @@ const index = () => {
                 is24Hour={true}
                 display="default"
                 onChange={onChangeTime}
+                minimumDate={new Date(Date.now() + 5 * 60000)}
               />
             )}
 
             <View style={styles.dateRangeContainer}>
-              <TouchableOpacity style={styles.dateInput} onPress={() => {
-                setDatePickerMode('start');
-                setShowDatePicker(true);
-              }}>
+              <TouchableOpacity
+                style={styles.dateInput}
+                onPress={() => {
+                  setDatePickerMode('start');
+                  setShowDatePicker(true);
+                }}
+              >
                 <Text>{startDate.toLocaleDateString()}</Text>
               </TouchableOpacity>
               <Text>to</Text>
-              <TouchableOpacity style={styles.dateInput} onPress={() => {
-                setDatePickerMode('end');
-                setShowDatePicker(true);
-              }}>
+              <TouchableOpacity
+                style={styles.dateInput}
+                onPress={() => {
+                  setDatePickerMode('end');
+                  setShowDatePicker(true);
+                }}
+              >
                 <Text>{endDate.toLocaleDateString()}</Text>
               </TouchableOpacity>
             </View>
@@ -134,15 +202,23 @@ const index = () => {
                 mode="date"
                 display="default"
                 onChange={onChangeDate}
+                minimumDate={datePickerMode === 'start' ? new Date() : startDate}
               />
             )}
+
+            {errorMessage && (
+              <Text style={styles.errorMessage}>{errorMessage}</Text>
+            )}
+
             <SliderButton
-              onSlideComplete={() => { setModalVisible(false);}}
+              ref={sliderRef}
+              onSlideComplete={handleSlideComplete}
               iconColor={"white"}
               iconSize={50}
               width={300}
               height={50}
             />
+
           </View>
         </View>
       </Modal>
@@ -260,4 +336,11 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
   },
+  errorMessage: {
+    color: 'red',
+    fontSize: 16,
+    marginBottom: 10,
+    marginLeft: 10,
+    textAlign: 'center'
+  }
 });

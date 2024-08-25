@@ -1,9 +1,19 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useImperativeHandle, forwardRef } from 'react';
 import { View, Text, StyleSheet, PanResponder, Animated } from 'react-native';
 import AntDesign from '@expo/vector-icons/AntDesign';
-const SliderButton = ({ iconColor, iconSize, onSlideComplete, width = 250, height = 50 }) => {
+
+const SliderButton = forwardRef(({ iconColor, iconSize, onSlideComplete, width = 250, height = 50 }, ref) => {
     const [sliderPosition, setSliderPosition] = useState(0);
     const pan = useRef(new Animated.ValueXY()).current;
+
+    useImperativeHandle(ref, () => ({
+        reset: () => {
+            Animated.spring(pan.x, {
+                toValue: 0,
+                useNativeDriver: false,
+            }).start();
+        }
+    }));
 
     const panResponder = PanResponder.create({
         onStartShouldSetPanResponder: () => true,
@@ -44,7 +54,7 @@ const SliderButton = ({ iconColor, iconSize, onSlideComplete, width = 250, heigh
             </Animated.View>
         </View>
     );
-};
+});
 
 const styles = StyleSheet.create({
     container: {
