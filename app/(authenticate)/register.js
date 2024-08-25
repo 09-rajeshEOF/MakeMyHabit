@@ -83,7 +83,7 @@ const db = getFirestore(app)
         await setDoc(userRef, {
           name,
           dob: dobString,
-          habits: {},
+          habits:[],
         });
         console.log('User data written to Firestore');
         router.replace('/login');

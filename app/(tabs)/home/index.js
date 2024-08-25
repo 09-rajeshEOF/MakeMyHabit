@@ -16,13 +16,16 @@ const index = () => {
         <Pressable style={{ ...styles.pressable, marginRight: 'auto' }}>
           <Text style={styles.pressableText}>Personal</Text>
         </Pressable>
-        <Pressable>
+        <TouchableOpacity>
           <AntDesign name="pluscircle" size={32} color="#007FFF" />
-        </Pressable>
+        </TouchableOpacity>
       </View>
       <ScrollView>
         <View style={{padding:10}}>
-          {todo?.length > 0 ? (<View></View>) : (<View style={styles.noToDo}>
+          {todo?.length > 0 ? (
+            <View>
+              
+            </View>) : (<View style={styles.noToDo}>
             <Image source={require('./../../../assets/no-todoList.png')} style={styles.notodoImage} />
             <Text style={styles.ifNotask}>No! Tasks</Text>
             <TouchableOpacity style={{marginTop:40}}>

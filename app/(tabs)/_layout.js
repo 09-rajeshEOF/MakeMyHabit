@@ -37,7 +37,7 @@ const layout = () => {
                     },
                     headerShown: false,
                     tabBarIcon: ({ focused }) =>
-                        focused ? (<MaterialCommunityIcons name="account-details" size={24} color="#7CB9E8" />) : (<MaterialCommunityIcons name="account-details" size={24} color="black" />)
+                        focused ? (<MaterialCommunityIcons name="account-details" size={30} color="#7CB9E8" />) : (<MaterialCommunityIcons name="account-details" size={24} color="black" />)
                 }
             } />
         </Tabs>
